@@ -1,0 +1,11 @@
+{application,proj2,
+             [{applications,[kernel,stdlib,elixir,logger]},
+              {description,"proj2"},
+              {modules,['Elixir.Proj2.Full2DNetwork',
+                        'Elixir.Proj2.Full3DNetwork',
+                        'Elixir.Proj2.FullNetwork','Elixir.Proj2.LineNetwork',
+                        'Elixir.Proj2.SimpleGenServerGossipNetworkNode',
+                        'Elixir.Proj2.SimpleGenServerPushSumNetworkNode',
+                        'Elixir.Proj2.TorusNetwork','Elixir.Proj2.Utility']},
+              {registered,[]},
+              {vsn,"0.1.0"}]}.
