@@ -1,0 +1,117 @@
+<section class="phx-hero user-section">
+  <h2>Logs</h2>
+    <div id="logs-wrapper">
+  </div>
+</section>
+
+<div>Total bitcoins as the network contiues to mine... <div>
+<div id="bitcoin-data">0</div>
+<br>
+
+<section class="row">
+  <article class="column">  
+    <h2>Users</h2>
+    <div id="users-miners">
+      <%# Hello! %>
+    </div>
+  </article>
+
+  <article class="column">
+    <h2>Search</h2>
+    <input id="search-txt" type="text" placeholder="user id">
+    <input id="search-btn" type="button" value="Search">
+
+    <h2>Details</h2>
+    <div id="user-details">
+    </div>
+  </article>
+</section>
+
+<script>
+  function initializePage() {
+    var searchbBtn = document.getElementById('search-btn');
+    searchbBtn.addEventListener("click", function() {
+        updateUserDetail();
+    });
+
+    setInterval(updateLogs, 2000);
+    setInterval(updateBitcoinsSumData, 10000);
+    updateUserTable();
+  }
+
+  function updateUserDetail() {
+    var userDetailsEle = document.getElementById("user-details");
+    var searchbTxt = document.getElementById("search-txt");
+    var userId = searchbTxt.value;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var jsonLogs = JSON.parse(this.responseText);
+        var textLogs = "";
+        textLogs += "user_address: " + jsonLogs["user_address"] + "<br>"
+        textLogs += "balance: " + jsonLogs["balance"] + "<br>"
+        textLogs += "change: " + jsonLogs["splits"] + "<br>" 
+
+        userDetailsEle.innerHTML = textLogs;
+      }
+    };
+    xhttp.open("GET", "getuserdetail?user_id=" + userId, true);
+    xhttp.send();
+  }
+
+  function updateLogs() {
+    var logsEle = document.getElementById('logs-wrapper');
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var jsonLogs = JSON.parse(this.responseText);
+        var textLogs = "<table>";
+        for (var i = 0; i < jsonLogs["all_logs"].length; i++) {
+          textLogs += "<tr><td>" + jsonLogs["all_logs"][i] + "</td></tr>";
+        }
+
+        textLogs += "</table>";
+        logsEle.innerHTML = textLogs;
+      }
+    };
+    xhttp.open("GET", "getlogs", true);
+    xhttp.send();
+  }
+
+  function updateUserTable() {
+    var usersMinersEle = document.getElementById("users-miners");
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var jsonText = JSON.parse(this.responseText);
+        var displayText = "<table><tr><td>Address</td><td>Type</td></tr>";
+        for (var i = 0; i < jsonText["miners_addresses"].length; i++) {
+          displayText += "<tr><td>" + jsonText["miners_addresses"][i] + "</td><td>Miner</td></tr>";
+        }
+
+        for (var i = 0; i < jsonText["users_addresses"].length; i++) {
+          displayText += "<tr><td>" + jsonText["users_addresses"][i] + "</td><td>User</td><tr>";
+        }
+
+        displayText += "</table>";
+        usersMinersEle.innerHTML = displayText;
+      }
+    };
+    xhttp.open("GET", "getuserdata", true);
+    xhttp.send();
+  }
+
+  function updateBitcoinsSumData() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var bitcoinDataEle = document.getElementById("bitcoin-data");
+        bitcoinDataEle.innerHTML = JSON.parse(this.responseText)["bitcoins"]
+      }
+    };
+    xhttp.open("GET", "bitcoinssum", true);
+    xhttp.send();
+  }
+
+  initializePage();
+</script>
